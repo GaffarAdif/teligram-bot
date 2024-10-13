@@ -7,9 +7,7 @@ import { GiReceiveMoney, GiCardPlay } from 'react-icons/gi';
 function Header() {
   return (
     <>
-      <header className="p-4 text-white flex justify-center items-center bg-black fixed top-0 left-0 right-0 shadow-md z-10">
-        <h1 className="text-lg font-bold">Crypto Mining App</h1>
-      </header>
+
       <nav className="p-2 fixed bg-black bottom-0 left-0 right-0 flex justify-around text-white shadow-md z-10">
         <NavLink
           to="/"
@@ -28,15 +26,6 @@ function Header() {
         >
           <GiReceiveMoney className="text-2xl" />
           <span className="text-sm">Earn</span>
-        </NavLink>
-        <NavLink
-          to="/card"
-          className={({ isActive }) => 
-            `flex flex-col items-center ${isActive ? 'text-blue-400' : ''}`
-          }
-        >
-          <GiCardPlay className="text-2xl" />
-          <span className="text-sm">Card</span>
         </NavLink>
         <NavLink
           to="/airdrop"

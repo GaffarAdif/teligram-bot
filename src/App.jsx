@@ -6,7 +6,6 @@ import Loading from './components/Loading';
 
 const Home = lazy(() => import('./pages/Home'));
 const Earn = lazy(() => import('./pages/Earn'));
-const Card = lazy(() => import('./pages/Card'));
 const Airdrop = lazy(() => import('./pages/Airdrop'));
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="earn" element={<Earn />} />
-            <Route path="card" element={<Card />} />
             <Route path="airdrop" element={<Airdrop />} />
           </Route>
         </Routes>
