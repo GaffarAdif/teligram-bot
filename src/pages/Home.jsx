@@ -1,9 +1,36 @@
-// src/pages/Home.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
+import axios from 'axios';
 
 function Home() {
+  // Access the environment variable
+  const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+
+  console.log('Server URL:', serverUrl); // Logs the server URL
+
+
+  useEffect(() => {
+    // Function to fetch user data
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${serverUrl}/`); // Ensure this endpoint is correct
+        console.log('Server url  : ', response.data);
+      } catch (err) {
+        console.error('Error fetching user data:', err); // Log the error
+      } 
+    };
+
+    fetchUserData()
+  
+  },[])
+
+
+
+
+
+
   const user = {
     avatarUrl: 'https://example.com/avatar.jpg', // Replace with the user's avatar URL
     name: 'John Doe',
@@ -36,10 +63,6 @@ function Home() {
 
       <TapSwapGame />
       <div className="py-4"></div>
-
-
-
-      
     </div>
   );
 }
