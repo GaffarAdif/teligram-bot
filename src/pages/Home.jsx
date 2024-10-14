@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 function Home() {
   // Access the environment variable
   const serverUrl = import.meta.env.VITE_SERVER_URL;
+  const paramsss = useParams()
+
+  console.log(paramsss);
 
 
   console.log('Server URL:', serverUrl); // Logs the server URL
