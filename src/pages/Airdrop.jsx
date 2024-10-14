@@ -71,7 +71,7 @@ const Airdrop = () => {
         ))}
       </div>
       <p className="mt-4">
-        <strong>Note:</strong> Make sure to check our website regularly for updates on new airdrop campaigns!
+        <strong>Note:</strong>  check our Annoucement Channel regularly for updates on new airdrop campaigns!
       </p>
     </div>
   );

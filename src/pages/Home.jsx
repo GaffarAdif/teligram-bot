@@ -20,7 +20,7 @@ function Home() {
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
       <ProfileInfo 
-        avatarUrl={user.avatarUrl} 
+        avatarUrl={'https://res.cloudinary.com/dijeptfb6/image/upload/v1728886046/lyboq02a3m5db4ulgxsl.webp'} 
         name={user.name} 
         balance={user.balance} 
       />
@@ -35,6 +35,9 @@ function Home() {
       </div>
 
       <TapSwapGame />
+      <div className="py-4"></div>
+
+
 
       
     </div>
