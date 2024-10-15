@@ -4,17 +4,17 @@ const Airdrop = () => {
   const roadmapData = [
     {
       season: 'Season 1',
-      reward: '$1M  MTC = 3$',
+      reward: '$1M  QTM = 3$',
       users: '5 Million Users',
     },
     {
       season: 'Season 2',
-      reward: '$1M  MTC = 5$',
+      reward: '$1M  QTM = 5$',
       users: '15 Million Users',
     },
     {
       season: 'Final Season',
-      reward: '$1M  MTC = 1000 Exchanger MTC Coin',
+      reward: '$1M  MTC = 1000 Exchanger QTM Coin',
       users: '30 Million Users',
       note: 'Listing in Exchanger',
     },

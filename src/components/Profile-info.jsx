@@ -10,8 +10,14 @@ const ProfileInfo = ({ avatarUrl, name, balance }) => {
       />
       <div>
         <h2 className="text-2xl font-bold text-white tracking-wide">{name}</h2>
-        <p className="text-gray-300 text-lg mt-2">
-          Balance: <span className="font-semibold text-green-400">{balance} MFT</span>
+        <p className="text-gray-300 text-lg mt-2 flex items-center">
+          Balance: 
+          <img 
+            src="https://res.cloudinary.com/dijeptfb6/image/upload/v1728970137/mblvhxojf5fjbs8bodvg.png" 
+            alt="Currency Logo" 
+            className="w-6 h-6 mx-2" 
+          />
+          <span className="font-semibold text-green-400">{balance} QTM</span>
         </p>
       </div>
     </div>

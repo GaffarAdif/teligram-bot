@@ -13,7 +13,7 @@ const Loader = () => {
                 const response = await axios.get(`http://localhost:3000/user/${id}`);
                 if (response && response.data) {
                     localStorage.setItem('user', id); 
-                    console.log(response.data.id);
+                navigate('/')
                 }
             } catch (error) {
                 console.error("Error fetching user:", error); // Handle the error
