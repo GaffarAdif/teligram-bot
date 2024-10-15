@@ -8,19 +8,33 @@ const Loader = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        let isMounted = true; // Track if the component is mounted
+
         const fetchUser = async () => {
             try {
                 const response = await axios.get(`http://localhost:3000/user/${id}`);
-                if (response && response.data) {
-                    localStorage.setItem('user', id); 
-                navigate('/')
+                console.log('NewUser:', response.data.NewUser); // Debugging log
+
+                if (isMounted && response && response.data) {
+                    localStorage.setItem('user', JSON.stringify(response.data)); 
+                    // Check if NewUser exists in the response data
+                    if (response.data.NewUser) {
+                        navigate('/new-user'); // Navigate to new user page if NewUser is defined
+                    } else {
+                        navigate('/'); // Navigate to home page if NewUser is undefined
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching user:", error); // Handle the error
+                // Optionally, you can navigate to an error page or show a notification
             }
         };
 
         fetchUser(); // Call the async function
+
+        return () => {
+            isMounted = false; // Cleanup function to prevent state updates after unmount
+        };
     }, [id, navigate]); // Add id and navigate to the dependency array
 
     return (

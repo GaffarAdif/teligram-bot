@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+
 
 function Home() {
   // Access the environment variable
@@ -11,7 +10,12 @@ function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const storedUserData = localStorage.getItem('user');
+   const lgData = JSON.parse(localStorage.getItem('user'))
+
+   console.log(lgData);
+
+   let storedUserData = lgData.UserId
+
     
     if (storedUserData) {
       setUser(JSON.parse(storedUserData)); // Parse the stored user data
