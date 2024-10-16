@@ -1,35 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
-
+import MyContext from '../Contex/MyContext';
+import { UpdateDataBaseBalance } from '../HalperFuntion/BalanceUpdate';
 
 function Home() {
   // Access the environment variable
   const serverUrl = import.meta.env.VITE_SERVER_URL;
-  const [user, setUser] = useState(null);
+
+
+  const {appUser,setAppUser} = useContext(MyContext)
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-   const lgData = JSON.parse(localStorage.getItem('user'))
+  const databaseCall = sessionStorage.getItem("dbcall")
 
-   console.log(lgData);
+  if(!databaseCall){
+    UpdateDataBaseBalance()
+    sessionStorage.setItem('dbcall', 'dadabaseCalled')
+  }else{
+    console.log('data base already called');
+  }
 
-   let storedUserData = lgData.UserId
 
-    
-    if (storedUserData) {
-      setUser(JSON.parse(storedUserData)); // Parse the stored user data
-    } else {
-      setError('No user data found. Please log in.');
-    }
-  }, []);
+  console.log(Boolean(sessionStorage.getItem("dbcall")));
 
+console.log(appUser);
   // Sample notices
   const notices = [
     'Notice 1: Your account balance has been updated.',
     'Notice 2: New features are coming soon!',
     'Notice 3: Don’t forget to check out the latest offers!',
   ];
+
+
+
 
   // If user data is missing, show an error
   if (error) {
@@ -40,13 +44,14 @@ function Home() {
     );
   }
 
+  
   // If user data is available, render the main content
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
       <ProfileInfo 
         avatarUrl={'https://res.cloudinary.com/dijeptfb6/image/upload/v1728886046/lyboq02a3m5db4ulgxsl.webp'} 
-        name={user?.name || 'John Doe'} 
-        balance={user?.balance || 100.00} 
+        name={appUser?.name || 'John Doe'} 
+        balance={appUser?.Balance} 
       />
 
       <div className="mt-4">

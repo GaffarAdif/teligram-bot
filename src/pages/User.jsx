@@ -16,9 +16,10 @@ const Loader = () => {
                 console.log('NewUser:', response.data.NewUser); // Debugging log
 
                 if (isMounted && response && response.data) {
-                    localStorage.setItem('user', JSON.stringify(response.data)); 
                     // Check if NewUser exists in the response data
                     if (response.data.NewUser) {
+                        localStorage.clear(); // Clear local storage first
+                        localStorage.setItem('user', JSON.stringify(response.data)); // Set user data after clearing
                         navigate('/new-user'); // Navigate to new user page if NewUser is defined
                     } else {
                         navigate('/'); // Navigate to home page if NewUser is undefined

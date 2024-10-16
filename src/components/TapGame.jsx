@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import MyContext from '../Contex/MyContext';
 
-const  circleImage = 'https://res.cloudinary.com/dijeptfb6/image/upload/v1728886415/aio94dgr9n1as27whbhg.png'
+const circleImage = 'https://res.cloudinary.com/dijeptfb6/image/upload/v1728886415/aio94dgr9n1as27whbhg.png';
 
 const TapSwapGame = () => {
+  const {setAppUser } = useContext(MyContext);
   const [limitNumber, setLimitNumber] = useState(5000);
   const [clicks, setClicks] = useState([]);
   const [isPunched, setIsPunched] = useState(false); // State to track punch animation
   const circleRadius = 140; // Half of the circle's diameter (280px)
-  
+
   const increaseTimeoutRef = useRef(null);
   const animationRefs = useRef({}); // Store multiple animation intervals by unique keys
   const gradualIncreaseRef = useRef(null); // Ref for gradual increase interval
@@ -22,15 +24,18 @@ const TapSwapGame = () => {
     setTimeout(() => setIsPunched(false), 150); // Reset after 150ms
 
     // Check if the click is within the circle
-    const centerX = circleRadius; // Center x of the circle
-    const centerY = circleRadius; // Center y of the circle
-    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-
+    const distance = Math.sqrt((x - circleRadius) ** 2 + (y - circleRadius) ** 2);
     if (distance <= circleRadius) {
-      const giverNumber = 20;
+      const giverNumber = 5;
 
       // Decrease the limit number
       setLimitNumber((prev) => Math.max(prev - giverNumber, 0));
+      const StoredData = JSON.parse(localStorage.getItem('user'))
+      // Update appUser.Balance
+      setAppUser((prevUser) => ({
+        ...StoredData,
+        Balance: (StoredData?.Balance || 0) + giverNumber,
+      }));
 
       const clickId = Date.now(); // Unique identifier for each click
 
@@ -95,6 +100,12 @@ const TapSwapGame = () => {
       className="flex flex-col items-center justify-center h-fit bg-gradient-to-b from-gray-800 via-black to-gray-900 py-8 overflow-hidden rounded-t-[15%]"
       onClick={handleClick}
       style={{ width: '100%', overflowX: 'hidden' }}  // Hide horizontal scroll
+      tabIndex={0} // Allow keyboard focus
+      onKeyPress={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleClick(e);
+        }
+      }}
     >
       <div
         className={`relative w-[320px] h-[320px] border border-gray-500 rounded-full flex items-center justify-center bg-gradient-to-b from-blue-600 via-blue-500 to-indigo-600 shadow-xl cursor-pointer transition-transform ${
