@@ -9,7 +9,7 @@ const AdminLogin = () => {
     e.preventDefault();
     
     try {
-      const response = await axios.post('http://localhost:3000/api/admin/login', { keyword });
+      const response = await axios.post('http://localhost:3000/admin/login', { keyword });
       // Handle success (you can redirect or show a success message)
       console.log(response.data);
     } catch (err) {

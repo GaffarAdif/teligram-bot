@@ -5,6 +5,9 @@ import Loading from './components/Loading';
 import WelcomeUser from './pages/NewUser';
 import MyProvider from './Contex/MyProvider'; // Import your provider
 import AdminLogin from './Admin/Pages/login';
+import AdminHomePage from './Admin/Pages/AdminHomePage';
+import AdminTaskPage from './Admin/Pages/AdminTask';
+
 
 const Home = lazy(() => import('./pages/Home'));
 const Earn = lazy(() => import('./pages/Earn'));
@@ -25,6 +28,10 @@ function App() {
               <Route path="new-user" element={<WelcomeUser />} />
               {/* here start admin route section  */}
               <Route path="admin/login" element={< AdminLogin/>} />
+              <Route path="admin/home" element={< AdminHomePage />} />
+              <Route path="admin/task" element={ < AdminTaskPage />} />
+
+
             </Route>
           </Routes>
         </Suspense>
