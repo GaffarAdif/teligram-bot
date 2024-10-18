@@ -3,37 +3,42 @@ import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
 import MyContext from '../Contex/MyContext';
 import { UpdateDataBaseBalance } from '../HalperFuntion/BalanceUpdate';
+import axios from 'axios';
 
 function Home() {
   // Access the environment variable
   const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-
-  const {appUser,setAppUser} = useContext(MyContext)
+  const { appUser, setAppUser } = useContext(MyContext);
   const [error, setError] = useState(null);
+  const [notices, setNotices] = useState([]); // State to store notices
+  const [loading, setLoading] = useState(true); // State for loading
 
-  const databaseCall = sessionStorage.getItem("dbcall")
+  const databaseCall = sessionStorage.getItem("dbcall");
 
-  if(!databaseCall){
-    UpdateDataBaseBalance()
-    sessionStorage.setItem('dbcall', 'dadabaseCalled')
-  }else{
+  if (!databaseCall) {
+    UpdateDataBaseBalance();
+    sessionStorage.setItem('dbcall', 'dadabaseCalled');
+  } else {
     console.log('data base already called');
   }
 
+  // Fetch notices from server
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const response = await axios.get(`${serverUrl}/notice`); // Make sure the endpoint is correct
+        setNotices(response.data);
+        console.log(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load notices');
+        setLoading(false);
+      }
+    };
 
-  console.log(Boolean(sessionStorage.getItem("dbcall")));
-
-console.log(appUser);
-  // Sample notices
-  const notices = [
-    'Notice 1: Your account balance has been updated.',
-    'Notice 2: New features are coming soon!',
-    'Notice 3: Don’t forget to check out the latest offers!',
-  ];
-
-
-
+    fetchNotices();
+  }, [serverUrl]);
 
   // If user data is missing, show an error
   if (error) {
@@ -44,7 +49,15 @@ console.log(appUser);
     );
   }
 
-  
+  // Show a loading spinner while fetching data
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 bg-black text-white min-h-screen flex items-center justify-center">
+        <h2 className="text-xl font-bold">Loading...</h2>
+      </div>
+    );
+  }
+
   // If user data is available, render the main content
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
@@ -58,7 +71,7 @@ console.log(appUser);
         <h2 className="text-lg font-bold">Notice</h2>
         <ul className="list-disc pl-5">
           {notices.map((notice, index) => (
-            <li key={index} className="mt-2">{notice}</li>
+            <li key={index} className="mt-2">{notice.notice}</li>
           ))}
         </ul>
       </div>

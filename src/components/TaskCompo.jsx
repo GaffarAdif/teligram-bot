@@ -13,7 +13,7 @@ function Task({ taskData, handleGoClick, handleKeywordSubmit, loadingTaskIndex, 
           </div>
 
           {loadingTaskIndex === index && (
-            <form onSubmit={(e) => handleKeywordSubmit(e, task.keyword, index)} className="mt-4">
+            <form onSubmit={(e) => handleKeywordSubmit(e, task.keyword, index,task.points )} className="mt-4">
               <input
                 type="text"
                 name="keyword"

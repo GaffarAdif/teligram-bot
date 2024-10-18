@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import Task from '../components/TaskCompo';
 import Refer from '../components/ReferCompo';
 import Lottery from '../components/LotteryCompo';
-import Rank from '../components/RankCompo';
+import Rank from '../components/RankCompo'; // Assuming RankCompo is the Rank component
+import MyContext from '../Contex/MyContext';
 
 function Earn() {
   const [mode, setMode] = useState('Task');
@@ -13,11 +14,13 @@ function Earn() {
   const [loadingTaskIndex, setLoadingTaskIndex] = useState(null);
   const [submittedKeywords, setSubmittedKeywords] = useState({});
   const [taskData, setTaskData] = useState([]);
-  const userData = [
-    { rank: 1, name: 'Alice', balance: '3.0 ETH' },
-    { rank: 2, name: 'Bob', balance: '2.5 ETH' },
-    { rank: 3, name: 'Charlie', balance: '1.0 ETH' },
-  ];
+  const [userData, setUserData] = useState([]); // State to store user ranking data
+
+  const {appUser,setAppUser} = useContext(MyContext)
+// console.log(appUser);
+
+
+
   const demoReferralData = [
     { name: 'John Doe', date: '2023-10-01' },
     { name: 'Jane Smith', date: '2023-10-03' },
@@ -41,17 +44,35 @@ function Earn() {
     setLoadingTaskIndex(index);
   };
 
-  const handleKeywordSubmit = (event, taskKeyword, index) => {
+  const handleKeywordSubmit = (event, taskKeyword, index, point) => {
     event.preventDefault();
     const keywordInput = event.target.elements.keyword.value;
+  
     if (keywordInput === taskKeyword) {
       setSubmittedKeywords((prev) => ({ ...prev, [index]: 'Complete' }));
       setLoadingTaskIndex(null);
+  
+      // Get the local user from localStorage
+      let localUser = JSON.parse(localStorage.getItem('user'));
+  
+      // Update the localUser balance by adding points
+      localUser.Balance += point; // Increment the balance by the provided points
+  
+      // Save the updated localUser back to localStorage
+    const localData = JSON.parse(localStorage.getItem('user'));
+  
+      // If you also want to update the React state of appUser (assuming you have appUser state)
+      setAppUser((prev) => ({
+        ...prev,
+        Balance: localData.Balance + point, // Update the balance in the component state
+      }));
+  
     } else {
       alert('Keyword does not match. Please try again.');
       event.target.reset();
     }
   };
+  
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -61,9 +82,10 @@ function Earn() {
   }, [timeLeft]);
 
   useEffect(() => {
+    // Fetch task data
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/task'); 
+        const response = await axios.get('http://localhost:3000/task');
         setTaskData(response.data);
       } catch (error) {
         console.error('Error fetching tasks:', error);
@@ -71,6 +93,22 @@ function Earn() {
     };
     fetchTasks();
   }, []);
+
+  useEffect(() => {
+    // Fetch user ranking data
+    const fetchUserRanking = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/user/all-user/rank'); // Update the URL as per your backend API route
+        setUserData(response.data.allUsers); // Assume response.data contains the array of users sorted by balance
+      } catch (error) {
+        console.error('Error fetching user ranking:', error);
+      }
+    };
+    
+    if (mode === 'User Rank') {
+      fetchUserRanking(); // Only fetch data when the mode is 'User Rank'
+    }
+  }, [mode]); // This will refetch user rank data only when the mode changes to 'User Rank'
 
   const formatTimeLeft = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -129,7 +167,7 @@ function Earn() {
           copyReferralCode={copyReferralCode}
         />
       )}
-      {mode === 'User Rank' && <Rank userData={userData} />}
+      {mode === 'User Rank' && <Rank userData={userData} currentUserId={appUser.UserId} />} {/* Pass the fetched user data */}
       {mode === 'Lottery' && (
         <Lottery
           ticketNumber={ticketNumber}
