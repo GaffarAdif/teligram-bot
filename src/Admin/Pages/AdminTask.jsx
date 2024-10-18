@@ -76,7 +76,7 @@ const AdminTaskPage = () => {
   // New delete function
   const handleDelete = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:3000/task/delete/${taskId}`); // Adjust the endpoint as necessary
+      await axios.delete(`http://localhost:3000/task/${taskId}`); // Adjust the endpoint as necessary
       alert('Task deleted successfully!');
       fetchTasks(); // Fetch tasks again after deletion
     } catch (error) {
@@ -144,7 +144,7 @@ const AdminTaskPage = () => {
                       <p className="text-gray-600">Points: {task.points}</p>
                       <p className="text-gray-600">Keyword: {task.keyword}</p>
                       <button
-                        onClick={() => handleDelete(task.id)} // Call delete function on click
+                        onClick={() => handleDelete(task._id)} // Call delete function on click
                         className="mt-2 px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700 transition duration-200"
                       >
                         Delete

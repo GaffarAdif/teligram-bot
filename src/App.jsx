@@ -7,6 +7,7 @@ import MyProvider from './Contex/MyProvider'; // Import your provider
 import AdminLogin from './Admin/Pages/login';
 import AdminHomePage from './Admin/Pages/AdminHomePage';
 import AdminTaskPage from './Admin/Pages/AdminTask';
+import AdminNotice from './Admin/Pages/AdminNotice';
 
 
 const Home = lazy(() => import('./pages/Home'));
@@ -30,6 +31,8 @@ function App() {
               <Route path="admin/login" element={< AdminLogin/>} />
               <Route path="admin/home" element={< AdminHomePage />} />
               <Route path="admin/task" element={ < AdminTaskPage />} />
+              <Route path="admin/notice" element={ < AdminNotice />} />
+
 
 
             </Route>

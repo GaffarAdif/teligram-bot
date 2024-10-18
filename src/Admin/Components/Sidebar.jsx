@@ -5,13 +5,20 @@ import { FaHome, FaBox, FaUsers, FaTags, FaSignOutAlt } from 'react-icons/fa';
 const Sidebar = () => {
   const location = useLocation(); // Get the current location
 
+  // Mapping of sidebar labels to icons
+  const iconMapping = {
+    Dashboard: <FaHome />,
+    Task: <FaBox />,
+    Lottery: <FaTags />,
+    Notice: <FaUsers />,
+  };
+
   // Array of sidebar items
   const sidebarItems = [
-    { to: '/admin/home', icon: <FaHome />, label: 'Dashboard' },
-    { to: '/admin/task', icon: <FaBox />, label: 'Task' },
-    { to: '/admin/lottery', icon: <FaTags />, label: 'Lottery' },
-    { to: '/admin/notice', icon: <FaUsers />, label: 'Notice' },
-    { to: '/admin/logout', icon: <FaSignOutAlt />, label: 'Logout' }, // Add logout link
+    { to: '/admin/home', label: 'Dashboard' },
+    { to: '/admin/task', label: 'Task' },
+    { to: '/admin/lottery', label: 'Lottery' },
+    { to: '/admin/notice', label: 'Notice' },
   ];
 
   return (
@@ -31,7 +38,7 @@ const Sidebar = () => {
                 }`} // Highlight active link
                 aria-label={item.label} // Accessibility improvement
               >
-                {item.icon && <span className="mr-3">{item.icon}</span>}
+                {iconMapping[item.label] && <span className="mr-3">{iconMapping[item.label]}</span>}
                 <span>{item.label}</span>
               </Link>
             </li>
