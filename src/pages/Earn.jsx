@@ -3,35 +3,79 @@ import axios from 'axios';
 import Task from '../components/TaskCompo';
 import Refer from '../components/ReferCompo';
 import Lottery from '../components/LotteryCompo';
-import Rank from '../components/RankCompo'; // Assuming RankCompo is the Rank component
+import Rank from '../components/RankCompo'; 
 import MyContext from '../Contex/MyContext';
+
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function Earn() {
   const [mode, setMode] = useState('Task');
   const [ticketNumber, setTicketNumber] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour initially
-  const [referralCode, setReferralCode] = useState('QT-123-456');
+  const [hasTicket, setHasTicket] = useState(false); // State to check if user has a ticket
+  const [timeLeft, setTimeLeft] = useState(720); // Set to 720 seconds (12 minutes)
+  const [referralCode, setReferralCode] = useState('');
   const [loadingTaskIndex, setLoadingTaskIndex] = useState(null);
   const [submittedKeywords, setSubmittedKeywords] = useState({});
   const [taskData, setTaskData] = useState([]);
-  const [userData, setUserData] = useState([]); // State to store user ranking data
+  const [userData, setUserData] = useState([]);
+  const [referralData, setReferralData] = useState([]); // State for referral data
+  const [loadingReferral, setLoadingReferral] = useState(false); // Loading state for referrals
 
-  const {appUser,setAppUser} = useContext(MyContext)
-// console.log(appUser);
+  const { appUser, setAppUser } = useContext(MyContext);
 
+  console.log(appUser);
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setReferralCode(user.referCode); // Set referral code from user
+      fetchReferralData(user.referCode); // Fetch referral data
+      checkUserTicket(user._id); // Check if the user has a ticket
+    }
+  }, []);
 
-  const demoReferralData = [
-    { name: 'John Doe', date: '2023-10-01' },
-    { name: 'Jane Smith', date: '2023-10-03' },
-    { name: 'Sam Wilson', date: '2023-10-05' },
-  ];
+  const fetchReferralData = async (referCode) => {
+    setLoadingReferral(true); // Set loading state
+    try {
+      const response = await axios.get(`${serverUrl}/referrel/by-refercode/${referCode}`);
+      setReferralData(response.data.referrals || []); // Update referral data state
+    } catch (error) {
+      console.error('Error fetching referral data:', error);
+    } finally {
+      setLoadingReferral(false); // Clear loading state
+    }
+  };
+
+  // New function to check if the user has a ticket
+  const checkUserTicket = async (userId) => {
+    try {
+      const response = await axios.get(`${serverUrl}/lottery/check-ticket/${userId}`);
+      if (response.data.hasTicket) {
+        setHasTicket(true);
+        setTicketNumber(response.data.ticketNumber);
+      } else {
+        setHasTicket(false);
+      }
+    } catch (error) {
+      console.error('Error checking ticket:', error);
+    }
+  };
 
   const handleModeChange = (newMode) => setMode(newMode);
 
-  const handleBuyTicket = () => {
-    const newTicketNumber = `QT${Math.floor(100000 + Math.random() * 900000)}`;
-    setTicketNumber(newTicketNumber);
+  const handleBuyTicket = async () => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    try {
+      // Call the server to buy a ticket
+      const response = await axios.post(`${serverUrl}/lottery/buy`, {
+        userId: appUser._id, // Assuming you have user ID stored in appUser
+      });
+      setTicketNumber(response.data.ticketNumber);
+      setHasTicket(true); // Set hasTicket to true after buying the ticket
+    } catch (error) {
+      console.error('Error buying ticket:', error);
+      alert('An error occurred while trying to buy a ticket. Please try again later.');
+    }
   };
 
   const copyReferralCode = () => {
@@ -47,46 +91,32 @@ function Earn() {
   const handleKeywordSubmit = (event, taskKeyword, index, point) => {
     event.preventDefault();
     const keywordInput = event.target.elements.keyword.value;
-  
+
     if (keywordInput === taskKeyword) {
       setSubmittedKeywords((prev) => ({ ...prev, [index]: 'Complete' }));
       setLoadingTaskIndex(null);
-  
-      // Get the local user from localStorage
+      
+      // Update the user's balance
       let localUser = JSON.parse(localStorage.getItem('user'));
-  
-      // Update the localUser balance by adding points
-      localUser.Balance += point; // Increment the balance by the provided points
-  
-      // Save the updated localUser back to localStorage
-    const localData = JSON.parse(localStorage.getItem('user'));
-  
-      // If you also want to update the React state of appUser (assuming you have appUser state)
+      localUser.Balance += point; 
+      localStorage.setItem('user', JSON.stringify(localUser)); // Save updated user to localStorage
+
+      // Update appUser state
       setAppUser((prev) => ({
         ...prev,
-        Balance: localData.Balance + point, // Update the balance in the component state
+        Balance: localUser.Balance, // Update balance
       }));
-  
     } else {
       alert('Keyword does not match. Please try again.');
       event.target.reset();
     }
   };
-  
 
   useEffect(() => {
-    if (timeLeft > 0) {
-      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-      return () => clearInterval(timer);
-    }
-  }, [timeLeft]);
-
-  useEffect(() => {
-    // Fetch task data
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/task');
-        setTaskData(response.data);
+        const response = await axios.get(`${serverUrl}/task`);
+        setTaskData(response.data); // Adjust based on API response structure
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -95,28 +125,24 @@ function Earn() {
   }, []);
 
   useEffect(() => {
-    // Fetch user ranking data
     const fetchUserRanking = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/user/all-user/rank'); // Update the URL as per your backend API route
-        setUserData(response.data.allUsers); // Assume response.data contains the array of users sorted by balance
+        const response = await axios.get(`${serverUrl}/user/all-user/rank`);
+        setUserData(response.data.allUsers); 
       } catch (error) {
         console.error('Error fetching user ranking:', error);
       }
     };
-    
+
     if (mode === 'User Rank') {
-      fetchUserRanking(); // Only fetch data when the mode is 'User Rank'
+      fetchUserRanking();
     }
-  }, [mode]); // This will refetch user rank data only when the mode changes to 'User Rank'
+  }, [mode]);
 
   const formatTimeLeft = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes
-      .toString()
-      .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -125,30 +151,10 @@ function Earn() {
       <p className="mb-4">Discover various methods to earn cryptocurrency and maximize your profits!</p>
 
       <div className="flex space-x-4 mb-6">
-        <button
-          onClick={() => handleModeChange('Task')}
-          className={`px-4 py-2 rounded ${mode === 'Task' ? 'bg-blue-600' : 'bg-gray-700'}`}
-        >
-          Task
-        </button>
-        <button
-          onClick={() => handleModeChange('Refer')}
-          className={`px-4 py-2 rounded ${mode === 'Refer' ? 'bg-blue-600' : 'bg-gray-700'}`}
-        >
-          Refer
-        </button>
-        <button
-          onClick={() => handleModeChange('User Rank')}
-          className={`px-4 py-2 rounded ${mode === 'User Rank' ? 'bg-blue-600' : 'bg-gray-700'}`}
-        >
-          Rank
-        </button>
-        <button
-          onClick={() => handleModeChange('Lottery')}
-          className={`px-4 py-2 rounded ${mode === 'Lottery' ? 'bg-blue-600' : 'bg-gray-700'}`}
-        >
-          Lottery
-        </button>
+        <button onClick={() => handleModeChange('Task')} className={`px-4 py-2 rounded ${mode === 'Task' ? 'bg-blue-600' : 'bg-gray-700'}`}>Task</button>
+        <button onClick={() => handleModeChange('Refer')} className={`px-4 py-2 rounded ${mode === 'Refer' ? 'bg-blue-600' : 'bg-gray-700'}`}>Refer</button>
+        <button onClick={() => handleModeChange('User Rank')} className={`px-4 py-2 rounded ${mode === 'User Rank' ? 'bg-blue-600' : 'bg-gray-700'}`}>Rank</button>
+        <button onClick={() => handleModeChange('Lottery')} className={`px-4 py-2 rounded ${mode === 'Lottery' ? 'bg-blue-600' : 'bg-gray-700'}`}>Lottery</button>
       </div>
 
       {mode === 'Task' && (
@@ -163,15 +169,16 @@ function Earn() {
       {mode === 'Refer' && (
         <Refer
           referralCode={referralCode}
-          demoReferralData={demoReferralData}
+          referralData={referralData} // Pass the fetched referral data
           copyReferralCode={copyReferralCode}
+          loading={loadingReferral} // Pass loading state for referral data
         />
       )}
-      {mode === 'User Rank' && <Rank userData={userData} currentUserId={appUser.UserId} />} {/* Pass the fetched user data */}
+      {mode === 'User Rank' && <Rank userData={userData} currentUserId={appUser.UserId} />}
       {mode === 'Lottery' && (
         <Lottery
-          ticketNumber={ticketNumber}
-          handleBuyTicket={handleBuyTicket}
+          ticketNumber={hasTicket ? ticketNumber : null} // Pass ticket number if user has one
+          handleBuyTicket={!hasTicket ? handleBuyTicket : null} // Only allow to buy ticket if user doesn't have one
           formatTimeLeft={formatTimeLeft}
           timeLeft={timeLeft}
         />

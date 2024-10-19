@@ -2,31 +2,20 @@ import React from 'react';
 
 function Lottery({ ticketNumber, handleBuyTicket, formatTimeLeft, timeLeft }) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold mb-4">Lottery</h2>
-      <div className="bg-gray-800 p-6 rounded-lg shadow-md text-center">
+    <div className="bg-gray-700 p-4 rounded-lg shadow-lg mt-4">
+      <h2 className="text-2xl font-bold mb-4 text-center">Lottery</h2>
+      <div className="flex flex-col items-center">
         {ticketNumber ? (
-          <>
-            <h3 className="text-xl font-semibold">Your Ticket Number</h3>
-            <p className="text-3xl font-bold text-green-500 mt-2">{ticketNumber}</p>
-            <p className="mt-4">
-              Time left until draw: <span className="font-bold text-yellow-400">{formatTimeLeft(timeLeft)}</span>
-            </p>
-          </>
+          <div className="text-lg mb-4 p-2 bg-green-600 rounded shadow-lg">Your Ticket Number: <span className="font-bold">{ticketNumber}</span></div>
         ) : (
-          <>
-            <h3 className="text-xl font-semibold mb-4">Buy a Lottery Ticket</h3>
-            <button
-              onClick={handleBuyTicket}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              Buy Ticket
-            </button>
-            <p className="mt-4">
-              Time left until draw: <span className="font-bold text-yellow-400">{formatTimeLeft(timeLeft)}</span>
-            </p>
-          </>
+          <button
+            onClick={handleBuyTicket}
+            className="px-6 py-3 bg-blue-500 text-white rounded transition duration-300 hover:bg-blue-600"
+          >
+            Buy Ticket
+          </button>
         )}
+        <div className="mt-4 text-lg">Time Left: <span className="font-bold">{formatTimeLeft(timeLeft)}</span></div>
       </div>
     </div>
   );

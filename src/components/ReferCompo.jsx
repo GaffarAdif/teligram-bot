@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaCopy } from 'react-icons/fa';
 
-function Refer({ referralCode, demoReferralData, copyReferralCode }) {
+function Refer({ referralCode, referralData, copyReferralCode }) {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Referral Program</h2>
@@ -17,17 +17,23 @@ function Refer({ referralCode, demoReferralData, copyReferralCode }) {
             <FaCopy />
           </button>
         </div>
-        <p className="mt-4">You've referred {demoReferralData.length} users so far. Keep going to unlock more rewards!</p>
+        <p className="mt-4">You've referred {referralData.length} users so far. Keep going to unlock more rewards!</p>
       </div>
 
       <h3 className="text-xl font-semibold mt-6">Referred Users</h3>
       <div className="bg-gray-800 p-4 rounded-lg shadow-md">
-        {demoReferralData.map((user, index) => (
-          <div key={index} className="flex justify-between border-b border-gray-600 py-2">
-            <span>{user.name}</span>
-            <span>{user.date}</span>
-          </div>
-        ))}
+        {referralData.length > 0 ? (
+          referralData.map((user, index) => (
+            <div key={index} className="flex justify-between border-b border-gray-600 py-2">
+              <span>{user.name}</span>
+              <span>{user.date}</span>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-400">Your referral list is empty.</p>
+        )}
+
+        <div className="py-5"></div>
       </div>
     </div>
   );
