@@ -38,6 +38,8 @@ function Rank({ userData, currentUserId }) {
           <span>{currentUser.Balance}</span>
         </div>
       )}
+
+
     </div>
   );
 }

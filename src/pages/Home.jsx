@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
 import MyContext from '../Contex/MyContext';
-import { UpdateDataBaseBalance } from '../HalperFuntion/BalanceUpdate';
+import { UpdateUserOnServer } from '../HalperFuntion/UserUpdate';
 import axios from 'axios';
 
 function Home() {
@@ -17,7 +17,7 @@ function Home() {
   const databaseCall = sessionStorage.getItem("dbcall");
 
   if (!databaseCall) {
-    UpdateDataBaseBalance();
+    UpdateUserOnServer();
     sessionStorage.setItem('dbcall', 'dadabaseCalled');
   } else {
     console.log('data base already called');

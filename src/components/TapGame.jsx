@@ -31,11 +31,9 @@ const TapSwapGame = () => {
       // Decrease the limit number
       setLimitNumber((prev) => Math.max(prev - giverNumber, 0));
       const StoredData = JSON.parse(localStorage.getItem('user'))
+      StoredData.Balance += giverNumber
       // Update appUser.Balance
-      setAppUser((prev) => ({
-        ...prev,
-        Balance: StoredData.Balance + giverNumber, // Update the balance in the component state
-      }));
+      setAppUser((prev) => (StoredData));
 
       const clickId = Date.now(); // Unique identifier for each click
 

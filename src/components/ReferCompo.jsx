@@ -2,6 +2,7 @@ import React from 'react';
 import { FaCopy } from 'react-icons/fa';
 
 function Refer({ referralCode, referralData, copyReferralCode }) {
+  console.log(referralData);
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Referral Program</h2>
@@ -35,6 +36,7 @@ function Refer({ referralCode, referralData, copyReferralCode }) {
 
         <div className="py-5"></div>
       </div>
+      <div className="py-10"></div>
     </div>
   );
 }

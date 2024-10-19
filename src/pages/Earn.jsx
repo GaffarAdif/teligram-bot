@@ -11,41 +11,38 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 function Earn() {
   const [mode, setMode] = useState('Task');
   const [ticketNumber, setTicketNumber] = useState(null);
-  const [hasTicket, setHasTicket] = useState(false); // State to check if user has a ticket
+  const [hasTicket, setHasTicket] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [loadingTaskIndex, setLoadingTaskIndex] = useState(null);
   const [submittedKeywords, setSubmittedKeywords] = useState({});
   const [taskData, setTaskData] = useState([]);
   const [userData, setUserData] = useState([]);
-  const [referralData, setReferralData] = useState([]); // State for referral data
-  const [loadingReferral, setLoadingReferral] = useState(false); // Loading state for referrals
+  const [referralData, setReferralData] = useState([]);
+  const [loadingReferral, setLoadingReferral] = useState(false);
 
   const { appUser, setAppUser } = useContext(MyContext);
-
-  // console.log('its app user ', appUser._id);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
-      setReferralCode(user.referCode); // Set referral code from user
-      fetchReferralData(user.referCode); // Fetch referral data
-      checkUserTicket(user._id); // Check if the user has a ticket
+      setReferralCode(user.referCode);
+      fetchReferralData(user.referCode);
+      checkUserTicket(user._id);
     }
   }, []);
 
   const fetchReferralData = async (referCode) => {
-    setLoadingReferral(true); // Set loading state
+    setLoadingReferral(true);
     try {
       const response = await axios.get(`${serverUrl}/referrel/by-refercode/${referCode}`);
-      setReferralData(response.data.referrals || []); // Update referral data state
+      setReferralData(response.data.referrals || []);
     } catch (error) {
       console.error('Error fetching referral data:', error);
     } finally {
-      setLoadingReferral(false); // Clear loading state
+      setLoadingReferral(false);
     }
   };
 
-  // Function to check if the user has a ticket
   const checkUserTicket = async (userId) => {
     try {
       const response = await axios.get(`${serverUrl}/lottery/check-ticket/${userId}`);
@@ -65,12 +62,11 @@ function Earn() {
   const handleBuyTicket = async () => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     try {
-      // Call the server to buy a ticket
       const response = await axios.post(`${serverUrl}/lottery/buy`, {
-        userId: appUser._id, // Assuming you have user ID stored in appUser
+        userId: appUser._id,
       });
       setTicketNumber(response.data.ticketNumber);
-      setHasTicket(true); // Set hasTicket to true after buying the ticket
+      setHasTicket(true);
     } catch (error) {
       console.error('Error buying ticket:', error);
       alert('An error occurred while trying to buy a ticket. Please try again later.');
@@ -87,35 +83,43 @@ function Earn() {
     setLoadingTaskIndex(index);
   };
 
-  const handleKeywordSubmit = (event, taskKeyword, index, point) => {
+  const handleKeywordSubmit = (event, taskKeyword, index, point, taskId) => {
     event.preventDefault();
     const keywordInput = event.target.elements.keyword.value;
-
+  
     if (keywordInput === taskKeyword) {
       setSubmittedKeywords((prev) => ({ ...prev, [index]: 'Complete' }));
       setLoadingTaskIndex(null);
-      
-      // Update the user's balance
+  
       let localUser = JSON.parse(localStorage.getItem('user'));
-      localUser.Balance += point; 
-      localStorage.setItem('user', JSON.stringify(localUser)); // Save updated user to localStorage
-
-      // Update appUser state
+      if (!localUser) {
+        alert('User not found. Please log in again.');
+        return;
+      }
+  
+      localUser.Balance = localUser.Balance || 0; 
+      localUser.TaskCompleteId = localUser.TaskCompleteId || [];
+  
+      localUser.Balance += point;
+      localUser.TaskCompleteId = [...localUser.TaskCompleteId, taskId];
+      localStorage.setItem('user', JSON.stringify(localUser));
+  
       setAppUser((prev) => ({
         ...prev,
-        Balance: localUser.Balance, // Update balance
+        Balance: localUser.Balance,
+        TaskCompleteId: localUser.TaskCompleteId
       }));
     } else {
       alert('Keyword does not match. Please try again.');
       event.target.reset();
     }
   };
-
+  
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get(`${serverUrl}/task`);
-        setTaskData(response.data); // Adjust based on API response structure
+        setTaskData(response.data); 
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -138,6 +142,16 @@ function Earn() {
     }
   }, [mode]);
 
+  // ** NEW: Filter tasks based on completed tasks in local storage **
+  const filterCompletedTasks = (tasks) => {
+    const localData = JSON.parse(localStorage.getItem('user')) || [];
+
+    const completedTaskIds = localData.TaskCompleteId
+    return tasks.filter(task => !completedTaskIds.includes(task._id)); // Adjust the property based on your task structure
+  };
+
+  const filteredTaskData = filterCompletedTasks(taskData); // Get the filtered tasks
+
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-4">Ways to Earn Cryptocurrency</h1>
@@ -152,7 +166,7 @@ function Earn() {
 
       {mode === 'Task' && (
         <Task
-          taskData={taskData}
+          taskData={filteredTaskData} // Pass the filtered task data
           handleGoClick={handleGoClick}
           handleKeywordSubmit={handleKeywordSubmit}
           loadingTaskIndex={loadingTaskIndex}
@@ -162,17 +176,17 @@ function Earn() {
       {mode === 'Refer' && (
         <Refer
           referralCode={referralCode}
-          referralData={referralData} // Pass the fetched referral data
+          referralData={referralData}
           copyReferralCode={copyReferralCode}
-          loading={loadingReferral} // Pass loading state for referral data
+          loading={loadingReferral}
         />
       )}
       {mode === 'User Rank' && <Rank userData={userData} currentUserId={appUser.UserId} />}
       {mode === 'Lottery' && (
         <Lottery
-          ticketNumber={hasTicket ? ticketNumber : null} // Pass ticket number if user has one
-          handleBuyTicket={!hasTicket ? handleBuyTicket : null} // Only allow to buy ticket if user doesn't have one
-          curUser = {appUser._id}
+          ticketNumber={hasTicket ? ticketNumber : null}
+          handleBuyTicket={!hasTicket ? handleBuyTicket : null}
+          curUser={appUser._id}
         />
       )}
     </div>

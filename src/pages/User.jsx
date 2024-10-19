@@ -22,6 +22,8 @@ const Loader = () => {
                         localStorage.setItem('user', JSON.stringify(response.data)); // Set user data after clearing
                         navigate('/new-user'); // Navigate to new user page if NewUser is defined
                     } else {
+                        localStorage.clear(); // Clear local storage first
+                        localStorage.setItem('user', JSON.stringify(response.data)); 
                         navigate('/'); // Navigate to home page if NewUser is undefined
                     }
                 }

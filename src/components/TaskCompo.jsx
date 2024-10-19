@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 function Task({ taskData, handleGoClick, handleKeywordSubmit, loadingTaskIndex, submittedKeywords }) {
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Available Tasks</h2>
@@ -13,7 +14,7 @@ function Task({ taskData, handleGoClick, handleKeywordSubmit, loadingTaskIndex, 
           </div>
 
           {loadingTaskIndex === index && (
-            <form onSubmit={(e) => handleKeywordSubmit(e, task.keyword, index,task.points )} className="mt-4">
+            <form onSubmit={(e) => handleKeywordSubmit(e, task.keyword, index,task.points, task._id )} className="mt-4">
               <input
                 type="text"
                 name="keyword"
