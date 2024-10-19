@@ -3,7 +3,7 @@ import axios from 'axios';
 import Task from '../components/TaskCompo';
 import Refer from '../components/ReferCompo';
 import Lottery from '../components/LotteryCompo';
-import Rank from '../components/RankCompo'; 
+import Rank from '../components/RankCompo';
 import MyContext from '../Contex/MyContext';
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -12,7 +12,6 @@ function Earn() {
   const [mode, setMode] = useState('Task');
   const [ticketNumber, setTicketNumber] = useState(null);
   const [hasTicket, setHasTicket] = useState(false); // State to check if user has a ticket
-  const [timeLeft, setTimeLeft] = useState(720); // Set to 720 seconds (12 minutes)
   const [referralCode, setReferralCode] = useState('');
   const [loadingTaskIndex, setLoadingTaskIndex] = useState(null);
   const [submittedKeywords, setSubmittedKeywords] = useState({});
@@ -23,7 +22,7 @@ function Earn() {
 
   const { appUser, setAppUser } = useContext(MyContext);
 
-  console.log(appUser);
+  // console.log('its app user ', appUser._id);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -46,7 +45,7 @@ function Earn() {
     }
   };
 
-  // New function to check if the user has a ticket
+  // Function to check if the user has a ticket
   const checkUserTicket = async (userId) => {
     try {
       const response = await axios.get(`${serverUrl}/lottery/check-ticket/${userId}`);
@@ -139,12 +138,6 @@ function Earn() {
     }
   }, [mode]);
 
-  const formatTimeLeft = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-4">Ways to Earn Cryptocurrency</h1>
@@ -179,8 +172,7 @@ function Earn() {
         <Lottery
           ticketNumber={hasTicket ? ticketNumber : null} // Pass ticket number if user has one
           handleBuyTicket={!hasTicket ? handleBuyTicket : null} // Only allow to buy ticket if user doesn't have one
-          formatTimeLeft={formatTimeLeft}
-          timeLeft={timeLeft}
+          curUser = {appUser._id}
         />
       )}
     </div>
