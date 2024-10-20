@@ -4,15 +4,27 @@ import MyContext from '../Contex/MyContext';
 const circleImage = 'https://res.cloudinary.com/dijeptfb6/image/upload/v1728886415/aio94dgr9n1as27whbhg.png';
 
 const TapSwapGame = () => {
-  const {setAppUser } = useContext(MyContext);
-  const [limitNumber, setLimitNumber] = useState(5000);
+  const { setAppUser } = useContext(MyContext);
+
+  // Reset the limit number in localStorage upon page refresh
+
+  // Retrieve the initial value of limitNumber from localStorage
+  const getInitialLimitNumber = () => {
+    const savedLimitNumber = localStorage.getItem('limitNumber');
+    return savedLimitNumber ? Number(savedLimitNumber) : 5000;
+  };
+
+  const [limitNumber, setLimitNumber] = useState(getInitialLimitNumber); // Initialize limitNumber
   const [clicks, setClicks] = useState([]);
   const [isPunched, setIsPunched] = useState(false); // State to track punch animation
   const circleRadius = 140; // Half of the circle's diameter (280px)
 
-  const increaseTimeoutRef = useRef(null);
   const animationRefs = useRef({}); // Store multiple animation intervals by unique keys
-  const gradualIncreaseRef = useRef(null); // Ref for gradual increase interval
+
+  // Save limitNumber to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('limitNumber', limitNumber);
+  }, [limitNumber]);
 
   const handleClick = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -26,12 +38,13 @@ const TapSwapGame = () => {
     // Check if the click is within the circle
     const distance = Math.sqrt((x - circleRadius) ** 2 + (y - circleRadius) ** 2);
     if (distance <= circleRadius) {
-      const giverNumber = 5;
+      const giverNumber = 1;
 
       // Decrease the limit number
       setLimitNumber((prev) => Math.max(prev - giverNumber, 0));
-      const StoredData = JSON.parse(localStorage.getItem('user'))
-      StoredData.Balance += giverNumber
+      const StoredData = JSON.parse(localStorage.getItem('user'));
+      StoredData.Balance += giverNumber;
+
       // Update appUser.Balance
       setAppUser((prev) => (StoredData));
 
@@ -64,23 +77,6 @@ const TapSwapGame = () => {
         direction *= -1; // Change direction
         animateCount++;
       }, 250); // Change position every 250ms
-
-      // Restart the increase timeout every time the user clicks
-      clearTimeout(increaseTimeoutRef.current);
-      clearInterval(gradualIncreaseRef.current); // Stop previous gradual increase, if any
-
-      increaseTimeoutRef.current = setTimeout(() => {
-        gradualIncreaseRef.current = setInterval(() => {
-          setLimitNumber((prev) => {
-            if (prev < 5000) {
-              return Math.min(prev + 10, 5000); // Increase by 10 until reaching 5000
-            } else {
-              clearInterval(gradualIncreaseRef.current); // Stop when reaching 5000
-              return prev;
-            }
-          });
-        }, 100); // Increase every 100ms
-      }, 3000); // Start increasing after 3 seconds of no clicking
     }
   };
 
@@ -88,8 +84,6 @@ const TapSwapGame = () => {
   useEffect(() => {
     return () => {
       Object.values(animationRefs.current).forEach(clearInterval); // Clear all animations
-      clearTimeout(increaseTimeoutRef.current); // Clear timeout
-      clearInterval(gradualIncreaseRef.current); // Clear the increase interval
     };
   }, []);
 

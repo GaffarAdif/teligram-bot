@@ -1,28 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
 
 const Airdrop = () => {
+  const [walletAddress, setWalletAddress] = useState(null);
+
   const roadmapData = [
     {
       season: 'Season 1',
-      reward: '$1M  QTM = 3$',
+      reward: '10K  QTM = 1$',
       users: '5 Million Users',
     },
     {
       season: 'Season 2',
-      reward: '$1M  QTM = 5$',
+      reward: '10K QTM = 1.5$',
       users: '15 Million Users',
     },
     {
       season: 'Final Season',
-      reward: '$1M  MTC = 1000 Exchanger QTM Coin',
+      reward: '10K QTM = 1000 Exchanger QTM Coin',
       users: '30 Million Users',
       note: 'Listing in Exchanger',
     },
   ];
 
-  const handleConnectWallet = () => {
-    alert('Connecting your wallet...');
-    // Implement wallet connection logic here
+  const handleConnectWallet = async () => {
+    // Check if the browser has an Ethereum provider (MetaMask)
+    if (window.ethereum) {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        // Request account access if needed
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        setWalletAddress(address);
+        alert(`Connected: ${address}`);
+      } catch (error) {
+        console.error(error);
+        alert('Failed to connect to wallet');
+      }
+    } else {
+      alert('No wallet found! Please install MetaMask or ToonKeeper.');
+    }
   };
 
   return (
@@ -34,7 +52,7 @@ const Airdrop = () => {
           onClick={handleConnectWallet}
           className="bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500"
         >
-          Connect Wallet
+          {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Wallet'}
         </button>
       </div>
 
@@ -71,7 +89,7 @@ const Airdrop = () => {
         ))}
       </div>
       <p className="mt-4">
-        <strong>Note:</strong>  check our Annoucement Channel regularly for updates on new airdrop campaigns!
+        <strong>Note:</strong> check our Announcement Channel regularly for updates on new airdrop campaigns!
       </p>
     </div>
   );

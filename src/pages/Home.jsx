@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import ProfileInfo from '../components/Profile-info';
 import TapSwapGame from '../components/TapGame';
 import MyContext from '../Contex/MyContext';
-import { UpdateUserOnServer } from '../HalperFuntion/UserUpdate';
 import axios from 'axios';
 
 function Home() {
@@ -14,14 +13,7 @@ function Home() {
   const [notices, setNotices] = useState([]); // State to store notices
   const [loading, setLoading] = useState(true); // State for loading
 
-  const databaseCall = sessionStorage.getItem("dbcall");
 
-  if (!databaseCall) {
-    UpdateUserOnServer();
-    sessionStorage.setItem('dbcall', 'dadabaseCalled');
-  } else {
-    console.log('data base already called');
-  }
 
   // Fetch notices from server
   useEffect(() => {
@@ -74,6 +66,8 @@ function Home() {
             <li key={index} className="mt-2">{notice.notice}</li>
           ))}
         </ul>
+
+        <div className="py-2"></div>
       </div>
 
       <TapSwapGame />
