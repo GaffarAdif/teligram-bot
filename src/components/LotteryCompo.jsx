@@ -114,7 +114,7 @@ function Lottery({ ticketNumber, handleBuyTicket, curUser }) {
             </div>
           )}
 
-          {/* Display the winning message if the user is a winner */}
+          {/* Display the winning message if the user is a  winner  */}
           {isWinner && (
             <div className="mt-4 p-4 bg-yellow-500 rounded-lg shadow-lg text-center">
               <p className="text-xl font-bold mb-4">Congratulations! You're a winner!</p>
