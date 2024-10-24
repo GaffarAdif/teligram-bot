@@ -53,7 +53,7 @@ function Lottery({ ticketNumber, handleBuyTicket, curUser }) {
     const fetchWinners = async () => {
       setLoading(true); // Set loading to true before fetching data
       try {
-        const response = await axios.get(`${serverUrl}/lottery/winners`); // Replace with your API endpoint
+        const response = await axios.get(`${serverUrl}/lottery/winners`,); // Replace with your API endpoint
         setWinnerData(response.data[0].winners);
 
         const winnerFound = response.data[0].winners.some(winner => winner.userId === curUser);

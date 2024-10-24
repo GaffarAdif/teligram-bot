@@ -15,22 +15,39 @@ function Home() {
 
 
 
-  // Fetch notices from server
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const response = await axios.get(`${serverUrl}/notice`); // Make sure the endpoint is correct
-        setNotices(response.data);
-        console.log(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load notices');
-        setLoading(false);
-      }
-    };
+  
+// Initialize Telegram WebApp
+const tg = window.Telegram.WebApp;
+const user = tg.initDataUnsafe.user; // Get user data from Telegram WebApp
 
-    fetchNotices();
-  }, [serverUrl]);
+useEffect(() => {
+  const fetchNotices = async () => {
+    try {
+      // Send Telegram user information as query parameters
+      const response = await axios.get(`${serverUrl}/notice`, {
+        params: {
+          telegramUserId: user?.id,         // Telegram user ID
+          username: user?.username,         // Telegram username
+          firstName: user?.first_name,      // User's first name
+          lastName: user?.last_name         // User's last name
+        }
+      });
+
+      setNotices(response.data); // Set the response data into state
+      console.log(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to load notices');
+      setLoading(false);
+    }
+  };
+
+  fetchNotices();
+}, [serverUrl, user]); // Add 'user' to dependency array
+
+
+
+
 
   // If user data is missing, show an error
   if (error) {
