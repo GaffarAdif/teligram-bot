@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 
 const Airdrop = () => {
-  const [walletAddress, setWalletAddress] = useState(null);
 
   const roadmapData = [
     {
       season: 'Season 1',
-      reward: '10K  QTM = 1$',
+      reward: '10K QTM = 1$',
       users: '5 Million Users',
     },
     {
@@ -23,43 +21,13 @@ const Airdrop = () => {
     },
   ];
 
-  const handleConnectWallet = async () => {
-    // Check if the browser has an Ethereum provider (MetaMask)
-    if (window.ethereum) {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        // Request account access if needed
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        const address = await signer.getAddress();
-        setWalletAddress(address);
-        alert(`Connected: ${address}`);
-      } catch (error) {
-        console.error(error);
-        alert('Failed to connect to wallet');
-      }
-    } else {
-      alert('No wallet found! Please install MetaMask or ToonKeeper.');
-    }
-  };
-
   return (
     <div className="container mx-auto p-4 bg-black text-white min-h-screen">
-      {/* Wallet Connection Button */}
-      <div className="flex justify-between items-center mb-4 p-4 bg-gray-900 rounded-lg">
-        <h3 className="text-lg font-semibold">Connect Your Wallet</h3>
-        <button
-          onClick={handleConnectWallet}
-          className="bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500"
-        >
-          {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Wallet'}
-        </button>
-      </div>
-
       <h2 className="text-2xl font-bold mb-4">Airdrop Opportunities</h2>
       <p className="mb-4">
         Stay tuned for the latest airdrop events! Participate to earn free tokens by completing simple tasks.
       </p>
+      
       <h3 className="text-xl font-semibold mb-4">Roadmap:</h3>
       <div className="flex flex-col">
         {roadmapData.map((item, index) => (
@@ -88,8 +56,10 @@ const Airdrop = () => {
           </div>
         ))}
       </div>
+
+
       <p className="mt-4">
-        <strong>Note:</strong> check our Announcement Channel regularly for updates on new airdrop campaigns!
+        <strong>Note:</strong> Check our Announcement Channel regularly for updates on new airdrop campaigns!
       </p>
     </div>
   );
