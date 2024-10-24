@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AdminHeader from '../Components/AdminHeader'; // Adjust the path as necessary
 import Sidebar from '../Components/Sidebar'; // Adjust the path as necessary
-
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 const AdminTaskPage = () => {
   const [task, setTask] = useState({
     type: '',
@@ -45,7 +45,7 @@ const AdminTaskPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/task/create', task);
+      const response = await axios.post(`${serverUrl}/task/create`, task);
       console.log('Task added:', response.data);
       // Reset the form after submission
       setTask({
@@ -66,7 +66,7 @@ const AdminTaskPage = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/task'); // Adjust the endpoint as necessary
+      const response = await axios.get(`${serverUrl}/task`); // Adjust the endpoint as necessary
       setTasks(response.data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -76,7 +76,7 @@ const AdminTaskPage = () => {
   // New delete function
   const handleDelete = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:3000/task/${taskId}`); // Adjust the endpoint as necessary
+      await axios.delete(`${serverUrl}/task/${taskId}`); // Adjust the endpoint as necessary
       alert('Task deleted successfully!');
       fetchTasks(); // Fetch tasks again after deletion
     } catch (error) {

@@ -1,13 +1,13 @@
 import axios from "axios";
 import MyContext from '../Contex/MyContext';
-import { useContext } from "react";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 export const UpdateUserOnServer = async ()=>{
 
 const userData = JSON.parse(localStorage.getItem('user'))
 
     try {
         // Make a PUT request to the server to update the user's balance
-        const response = await axios.put(`http://localhost:3000/user/update-user/${userData.UserId}`, {
+        const response = await axios.put(`${serverUrl}/user/update-user/${userData.UserId}`, {
             updates: userData, // Send the new balance in the request body
         });
         // Handle successful response

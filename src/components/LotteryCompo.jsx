@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import MyContext from '../Contex/MyContext';
-
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 function Lottery({ ticketNumber, handleBuyTicket, curUser }) {
   const [winnerData, setWinnerData] = useState([]); // State to store winner data
   const [isWinner, setIsWinner] = useState(false); // State to track if the user is a winner
@@ -53,7 +53,7 @@ function Lottery({ ticketNumber, handleBuyTicket, curUser }) {
     const fetchWinners = async () => {
       setLoading(true); // Set loading to true before fetching data
       try {
-        const response = await axios.get('http://localhost:3000/lottery/winners'); // Replace with your API endpoint
+        const response = await axios.get(`${serverUrl}/lottery/winners`); // Replace with your API endpoint
         setWinnerData(response.data[0].winners);
 
         const winnerFound = response.data[0].winners.some(winner => winner.userId === curUser);

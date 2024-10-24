@@ -7,6 +7,8 @@ const Loader = () => {
     const { id } = useParams(); 
     const navigate = useNavigate();
 
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
+
     const databaseCall = sessionStorage.getItem("dbcall");
     const localNumber = localStorage.getItem('limitNumber');
 
@@ -27,7 +29,7 @@ const Loader = () => {
         const fetchUser = async () => {
             try {
                 // Add Telegram user info to the request
-                const response = await axios.get(`http://localhost:3000/user/${id}`, {
+                const response = await axios.get(`${serverUrl}/user/${id}`, {
                     TeligramUser: {
                         telegramUserId: user.id, // Pass Telegram user ID
                         username: user.username,

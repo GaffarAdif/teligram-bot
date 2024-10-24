@@ -3,6 +3,7 @@ import AdminHeader from '../Components/AdminHeader'; // Adjust the path as neces
 import Sidebar from '../Components/Sidebar'; // Adjust the path as necessary
 import { FiSend, FiTrash2 } from 'react-icons/fi';
 import axios from 'axios'; // Import Axios for making server calls
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const AdminNotice = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true); // Default to open
@@ -36,7 +37,7 @@ const AdminNotice = () => {
     useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/notice');
+                const response = await axios.get(`${serverUrl}/notice`);
                 setNotices(response.data); // Assuming response.data is an array of notices
             } catch (err) {
                 setError('Failed to fetch notices');
